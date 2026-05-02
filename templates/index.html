@@ -14,6 +14,9 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Leaflet Maps -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </head>
 <body>
 
@@ -149,12 +152,8 @@
                         </div>
                     </div>
                     
-                    <div class="heatmap-container rounded-4 position-relative p-4" style="min-height: 250px; background: rgba(0,0,0,0.2);">
-                        <!-- Placeholder for Future India AQI Map Integration -->
-                        <div class="w-100 h-100 d-flex flex-column align-items-center justify-content-center text-center text-muted" style="min-height: 200px;">
-                            <i class="fa-solid fa-map-location-dot fs-1 mb-3 opacity-25"></i>
-                            <h5>Live India AQI Map</h5>
-                        </div>
+                    <div class="heatmap-container rounded-4 position-relative p-0 overflow-hidden" style="min-height: 350px; background: rgba(0,0,0,0.2);">
+                        <div id="aqiMap" class="w-100 h-100 position-absolute top-0 start-0 z-0"></div>
                     </div>
                 </div>
             </div>
@@ -162,8 +161,7 @@
             <!-- 6. WHAT-IF SIMULATION PANEL -->
             <div class="col-lg-4">
                 <div class="glass-card p-4 h-100 simulation-panel position-relative overflow-hidden">
-                    <h5 class="mb-4 text-white fw-bold position-relative"><i class="fa-solid fa-sliders text-warning me-2"></i> What-If Simulation</h5>
-                    <p class="text-secondary fs-7 position-relative mb-4">Interactive UI Demo - Adjust sliders to predict AQI.</p>
+                    <h5 class="mb-3 text-white fw-bold position-relative"><i class="fa-solid fa-sliders text-warning me-2"></i> What-If Simulation</h5>
                     
                     <div class="simulation-controls position-relative">
                         <div class="mb-3">
@@ -190,15 +188,11 @@
                             </label>
                             <input type="range" class="form-range custom-slider" id="simOzone" min="0" max="150" step="1" value="35">
                         </div>
-                        
-                        <button class="btn btn-primary w-100 shadow-lg fw-bold rounded-pill simulation-btn" id="simulateBtn">
-                            Simulate AQI
-                        </button>
                     </div>
 
-                    <div class="mt-4 text-center">
+                    <div class="mt-2 text-center">
                         <hr class="border-secondary mb-3">
-                        <h4 class="fw-bold text-white mb-0" id="simResultDisplay">Predicted AQI: 178 <span class="fs-6 fw-normal text-warning">(Moderate)</span></h4>
+                        <h4 class="fw-bold text-white mb-0" id="simResultDisplay">Predicted AQI: <span class="spinner-border spinner-border-sm"></span></h4>
                     </div>
                 </div>
             </div>
@@ -217,57 +211,42 @@
                 </div>
             </div>
 
-            <!-- 8. CITY COMPARISON TABLE -->
-            <div class="col-lg-4">
-                <div class="glass-card p-0 h-100 overflow-hidden d-flex flex-column">
-                    <div class="p-4 pb-2 border-bottom border-secondary">
-                        <h5 class="fw-bold text-white mb-0"><i class="fa-solid fa-city text-warning me-2"></i> City Comparison</h5>
-                    </div>
-                    <div class="table-responsive flex-grow-1 p-2">
-                        <table class="table table-borderless table-hover text-white align-middle mb-0 city-table">
+            <!-- 8. MODEL COMPARISON DASHBOARD -->
+            <div class="col-lg-8">
+                <div class="glass-card p-4 h-100 position-relative overflow-hidden">
+                    <h5 class="fw-bold text-white mb-3 position-relative"><i class="fa-solid fa-scale-balanced text-warning me-2"></i> Explainable AI Dashboard</h5>
+                    <div class="table-responsive">
+                        <table class="table table-borderless table-hover text-white align-middle mb-2 comparison-table">
                             <thead class="text-secondary text-uppercase fs-7 border-bottom border-secondary">
                                 <tr>
-                                    <th class="fw-normal ps-3">City</th>
+                                    <th class="fw-normal">Model</th>
                                     <th class="fw-normal text-center">AQI</th>
-                                    <th class="fw-normal text-end pe-3">Category</th>
+                                    <th class="fw-normal text-center">R²</th>
+                                    <th class="fw-normal text-center">RMSE</th>
+                                    <th class="fw-normal text-center">MAE</th>
                                 </tr>
                             </thead>
-                            <tbody id="cityTableBody">
-                                <!-- Populated by JS -->
+                            <tbody id="comparisonTableBody">
+                                <!-- Populated dynamically by UI.js -->
                             </tbody>
                         </table>
                     </div>
-                </div>
-            </div>
-
-            <!-- 9. FUTURE FEATURES SECTION -->
-            <div class="col-lg-4">
-                <div class="glass-card p-4 h-100 position-relative overflow-hidden">
-                    <div class="glow-blob blob-2"></div>
-                    <h5 class="fw-bold text-white mb-3 position-relative"><i class="fa-solid fa-rocket text-danger me-2"></i> Future Enhancements</h5>
-                    <p class="text-secondary fs-7 fst-italic position-relative mb-4">"These features are planned for future scalability."</p>
                     
-                    <div class="d-flex flex-column gap-3 position-relative z-1">
-                        <button class="btn btn-outline-light text-start future-feature-btn">
-                            <i class="fa-solid fa-flask fs-5 text-info me-3 w-20px text-center"></i> 
-                            What-If Simulation (Advanced)
-                        </button>
-                        <button class="btn btn-outline-light text-start future-feature-btn">
-                            <i class="fa-solid fa-bell fs-5 text-warning me-3 w-20px text-center"></i> 
-                            Smart Alert Notifications
-                        </button>
-                        <button class="btn btn-outline-light text-start future-feature-btn">
-                            <i class="fa-solid fa-table-columns fs-5 text-primary me-3 w-20px text-center"></i> 
-                            City Comparison Dashboard
-                        </button>
-                        <button class="btn btn-outline-light text-start future-feature-btn">
-                            <i class="fa-solid fa-brain fs-5 text-success me-3 w-20px text-center"></i> 
-                            Self-Learning Model
-                        </button>
-                        <button class="btn btn-outline-light text-start future-feature-btn">
-                            <i class="fa-solid fa-earth-americas fs-5 text-danger me-3 w-20px text-center"></i> 
-                            Live API Integration
-                        </button>
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            <h6 class="text-info fw-bold fs-7 text-uppercase"><i class="fa-solid fa-lightbulb me-2"></i> Automated Insights</h6>
+                            <div id="aiInsightsPanel" class="p-3 bg-dark bg-opacity-50 rounded-3 border border-secondary border-opacity-50 fs-7 text-light h-100">
+                                <!-- Populated dynamically -->
+                            </div>
+                        </div>
+                        <div class="col-md-6 mt-3 mt-md-0">
+                            <h6 class="text-warning fw-bold fs-7 text-uppercase"><i class="fa-solid fa-list-ol me-2"></i> Live Model Ranking</h6>
+                            <div class="p-3 bg-dark bg-opacity-50 rounded-3 border border-secondary border-opacity-50 fs-7 text-light h-100">
+                                <ol id="aiRankingPanel" class="mb-0 ps-3">
+                                    <!-- Populated dynamically -->
+                                </ol>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -276,6 +255,6 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script type="module" src="{{ url_for('static', filename='js/main.js') }}?v=2"></script>
 </body>
 </html>

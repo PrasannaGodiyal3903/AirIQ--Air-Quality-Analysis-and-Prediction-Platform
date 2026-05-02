@@ -1,162 +1,94 @@
-document.addEventListener("DOMContentLoaded", () => {
-    const form = document.getElementById("aqiForm");
-    const predictBtn = document.getElementById("predictBtn");
-    const btnText = document.getElementById("btnText");
-    const btnSpinner = document.getElementById("btnSpinner");
-    
-    const resultsSection = document.getElementById("resultsSection");
-    const placeholder = document.getElementById("placeholder");
-    const resultsContent = document.getElementById("resultsContent");
-    
-    const aqiCircle = document.getElementById("aqiCircle");
-    const aqiValue = document.getElementById("aqiValue");
-    const aqiCategory = document.getElementById("aqiCategory");
-    const aqiSuggestion = document.getElementById("aqiSuggestion");
+// static/js/main.js
 
-    let chartInstance = null;
+import { fetchMetrics, simulateAQI, compareModels, fetchMapData } from './api.js';
+import { renderScatterChart, renderPollutantChart, renderComparisonChart } from './charts.js';
+import { initMap, renderMapMarkers } from './map.js';
+import { updateDateTime, populateMetricsTable, updateSimulationUI, showSimulationLoading, updateComparisonDashboard } from './ui.js';
 
-    form.addEventListener("submit", async async (e) => {
-        e.preventDefault();
+let debounceTimer;
+
+document.addEventListener("DOMContentLoaded", async () => {
+    // 1. Initialize Date/Time in Navbar
+    setInterval(updateDateTime, 1000);
+    updateDateTime();
+
+    // 2. Initialize Charts & Maps
+    renderPollutantChart();
+    initMap();
+
+    // 3. Fetch Initial Data (Metrics & Map)
+    loadDashboardData();
+
+    // 4. Setup Simulation Event Listeners
+    setupSimulationPanel();
+});
+
+async function loadDashboardData() {
+    try {
+        const [metricsData, mapData] = await Promise.all([
+            fetchMetrics(),
+            fetchMapData()
+        ]);
+
+        if (!metricsData.error) {
+            populateMetricsTable(metricsData.metrics);
+            renderScatterChart(metricsData.scatter);
+        }
+
+        if (!mapData.error) {
+            renderMapMarkers(mapData.data);
+        }
+    } catch (err) {
+        console.error("Error loading dashboard data:", err);
+    }
+}
+
+function setupSimulationPanel() {
+    const sliders = ['simCO', 'simNO2', 'simPM10', 'simOzone'];
+    
+    // Setup slider value displays
+    sliders.forEach(id => {
+        const slider = document.getElementById(id);
+        if(!slider) return;
         
-        // Setup UI for Loading
-        btnText.textContent = "Predicting...";
-        btnSpinner.classList.remove("d-none");
-        predictBtn.disabled = true;
-
-        // Gather Data
-        const formData = new FormData(form);
-        const data = {};
-        for (let [key, value] of formData.entries()) {
-            data[key] = parseFloat(value);
-        }
-
-        try {
-            // API Call
-            const response = await fetch("/predict", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(data)
-            });
+        slider.addEventListener('input', (e) => {
+            const valSpan = id.replace('sim', '').toLowerCase() + 'Val';
+            document.getElementById(valSpan).textContent = e.target.value;
             
-            const result = await response.json();
-            
-            if (response.ok) {
-                displayResults(result);
-                renderChart(result.input);
-            } else {
-                alert("Error: " + (result.error || "Failed to predict AQI"));
-            }
-        } catch (error) {
-            console.error("Error submitting form:", error);
-            alert("Network error or server unavailable.");
-        } finally {
-            // Restore UI
-            btnText.textContent = "Predict AQI";
-            btnSpinner.classList.add("d-none");
-            predictBtn.disabled = false;
-        }
+            // Trigger Debounced API call
+            triggerSimulation();
+        });
     });
 
-    function displayResults(result) {
-        // Hide placeholder, show content
-        placeholder.classList.add("d-none");
-        resultsContent.classList.remove("d-none");
-        
-        // Remove old classes from circle and category text
-        aqiCircle.className = "aqi-circle fade-in my-4 mx-auto";
-        aqiCategory.className = "fw-bold mb-3";
+    // Initial simulation run
+    triggerSimulation();
+}
 
-        // Map Category to CSS classes
-        let catClassSuffix = "";
-        const catMap = {
-            "Good": "good",
-            "Satisfactory": "satisfactory",
-            "Moderate": "moderate",
-            "Poor": "poor",
-            "Very Poor": "very-poor",
-            "Severe": "severe"
+function triggerSimulation() {
+    clearTimeout(debounceTimer);
+    showSimulationLoading();
+
+    debounceTimer = setTimeout(async () => {
+        const payload = {
+            PM10: parseInt(document.getElementById('simPM10').value),
+            NO2: parseInt(document.getElementById('simNO2').value),
+            OZONE: parseInt(document.getElementById('simOzone').value),
+            CO: parseFloat(document.getElementById('simCO').value)
         };
-        
-        catClassSuffix = catMap[result.category] || "moderate";
 
-        aqiCircle.classList.add(`aqi-${catClassSuffix}`);
-        aqiCategory.classList.add(`text-${catClassSuffix}`);
+        const selectedModel = "Hybrid Model"; // Locked to production model
 
-        // Animate AQI Value counting up
-        animateValue(aqiValue, 0, result.aqi, 1000);
-        
-        aqiCategory.textContent = result.category;
-        aqiSuggestion.textContent = result.suggestion;
-    }
+        // Parallel requests for single prediction AND model comparison
+        const [predictionData, comparisonData] = await Promise.all([
+            simulateAQI(payload, selectedModel),
+            compareModels(payload)
+        ]);
 
-    function renderChart(inputData) {
-        const ctx = document.getElementById('pollutantChart').getContext('2d');
+        updateSimulationUI(predictionData);
         
-        // Destroy old chart if exists
-        if (chartInstance) {
-            chartInstance.destroy();
+        if (!comparisonData.error) {
+            updateComparisonDashboard(comparisonData);
         }
 
-        const labels = Object.keys(inputData);
-        const data = Object.values(inputData);
-
-        chartInstance = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Pollutant Breakdown',
-                    data: data,
-                    backgroundColor: 'rgba(79, 172, 254, 0.6)',
-                    borderColor: 'rgba(79, 172, 254, 1)',
-                    borderWidth: 1,
-                    borderRadius: 4
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        labels: {
-                            color: '#c9d1d9'
-                        }
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        grid: {
-                            color: 'rgba(255, 255, 255, 0.1)'
-                        },
-                        ticks: {
-                            color: '#8b949e'
-                        }
-                    },
-                    x: {
-                        grid: {
-                            display: false
-                        },
-                        ticks: {
-                            color: '#8b949e'
-                        }
-                    }
-                }
-            }
-        });
-    }
-
-    // Helper: Count up animation
-    function animateValue(obj, start, end, duration) {
-        let startTimestamp = null;
-        const step = (timestamp) => {
-            if (!startTimestamp) startTimestamp = timestamp;
-            const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-            obj.innerHTML = Math.floor(progress * (end - start) + start);
-            if (progress < 1) {
-                window.requestAnimationFrame(step);
-            }
-        };
-        window.requestAnimationFrame(step);
-    }
-});
+    }, 300); // 300ms debounce
+}
