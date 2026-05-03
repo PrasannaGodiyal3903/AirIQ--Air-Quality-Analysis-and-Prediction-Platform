@@ -152,8 +152,102 @@
                         </div>
                     </div>
                     
-                    <div class="heatmap-container rounded-4 position-relative p-0 overflow-hidden" style="min-height: 350px; background: rgba(0,0,0,0.2);">
-                        <div id="aqiMap" class="w-100 h-100 position-absolute top-0 start-0 z-0"></div>
+                    <div class="heatmap-container rounded-4 position-relative p-0 overflow-hidden" style="min-height: 450px; background: rgba(0,0,0,0.2);">
+                        <iframe src="/heatmap" class="w-100 h-100 border-0" style="min-height: 450px; border-radius: 16px;"></iframe>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5. Commute Safety Score Section -->
+            <div class="col-12 mt-4">
+                <div class="glass-card p-4 h-100">
+                    <div class="d-flex align-items-center justify-content-between mb-4">
+                        <div class="d-flex align-items-center">
+                            <div class="icon-box bg-warning bg-opacity-25 me-3">
+                                <i class="fa-solid fa-route text-warning fs-4"></i>
+                            </div>
+                            <h4 class="mb-0 fw-bold">Commute Safety Score</h4>
+                        </div>
+                        <span class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 px-3 py-2 rounded-pill">
+                            New Feature
+                        </span>
+                    </div>
+
+                    <div class="row g-4">
+                        <div class="col-md-5">
+                            <form id="commuteForm" class="row g-3">
+                                <div class="col-12">
+                                    <label class="form-label text-secondary small text-uppercase fw-bold">Start Location</label>
+                                    <select class="form-select bg-dark text-white border-0 glass-input city-select" id="startCity" required>
+                                        <!-- Will be populated via JS -->
+                                    </select>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label text-secondary small text-uppercase fw-bold">End Location</label>
+                                    <select class="form-select bg-dark text-white border-0 glass-input city-select" id="endCity" required>
+                                        <!-- Will be populated via JS -->
+                                    </select>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label text-secondary small text-uppercase fw-bold">Travel Mode</label>
+                                    <div class="d-flex gap-2 flex-wrap" id="modeSelector">
+                                        <input type="radio" class="btn-check" name="travelMode" id="modeWalk" value="walk" checked>
+                                        <label class="btn btn-outline-info rounded-pill px-3" for="modeWalk"><i class="fa-solid fa-person-walking me-1"></i> Walk</label>
+
+                                        <input type="radio" class="btn-check" name="travelMode" id="modeCycle" value="cycle">
+                                        <label class="btn btn-outline-info rounded-pill px-3" for="modeCycle"><i class="fa-solid fa-bicycle me-1"></i> Cycle</label>
+
+                                        <input type="radio" class="btn-check" name="travelMode" id="modeCar" value="car">
+                                        <label class="btn btn-outline-info rounded-pill px-3" for="modeCar"><i class="fa-solid fa-car me-1"></i> Car</label>
+
+                                        <input type="radio" class="btn-check" name="travelMode" id="modeMetro" value="train">
+                                        <label class="btn btn-outline-info rounded-pill px-3" for="modeMetro"><i class="fa-solid fa-train-subway me-1"></i> Train/Metro</label>
+                                    </div>
+                                </div>
+                                <div class="col-12 mt-4">
+                                    <button type="submit" class="btn btn-warning w-100 fw-bold py-3 rounded-3 shadow-sm" id="calcCommuteBtn">
+                                        Calculate Exposure Score
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="col-md-7">
+                            <div id="commuteResultPlaceholder" class="h-100 d-flex flex-column align-items-center justify-content-center text-center p-5 rounded-4 border border-secondary border-opacity-10 bg-dark bg-opacity-25">
+                                <i class="fa-solid fa-calculator text-secondary fs-1 mb-3 opacity-25"></i>
+                                <p class="text-secondary">Enter your commute details to calculate safety and exposure levels.</p>
+                            </div>
+                            
+                            <div id="commuteResultCard" class="d-none h-100 p-4 rounded-4 border shadow-lg overflow-hidden position-relative" style="z-index: 1;">
+                                <div class="position-absolute top-50 end-0 translate-middle-y pe-4 opacity-10" style="z-index: -1;">
+                                    <i class="fa-solid fa-shield-virus" id="statusIconBg" style="font-size: 8rem;"></i>
+                                </div>
+                                <div class="row align-items-center">
+                                    <div class="col-sm-6">
+                                        <h2 class="display-4 fw-bold mb-0" id="resultAqi">0</h2>
+                                        <p class="text-secondary small text-uppercase mb-3">Est. AQI Exposure</p>
+                                        <div class="badge px-3 py-2 rounded-pill mb-3 fs-6" id="resultStatus">SAFE</div>
+                                    </div>
+                                    <div class="col-sm-6 text-sm-end">
+                                        <div class="mb-2">
+                                            <span class="text-secondary small">PM2.5 Exposure:</span>
+                                            <span class="fw-bold" id="resultPm">0 µg/m³</span>
+                                        </div>
+                                        <div class="mb-4">
+                                            <span class="text-secondary small">Route:</span>
+                                            <span class="fw-bold" id="resultRoute">A to B</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <hr class="border-secondary opacity-10">
+                                <div class="d-flex align-items-start mt-3">
+                                    <i class="fa-solid fa-circle-info text-info me-3 mt-1"></i>
+                                    <div>
+                                        <p class="mb-0 text-white" id="resultAdvice">Calculate to see advice.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -193,6 +287,70 @@
                     <div class="mt-2 text-center">
                         <hr class="border-secondary mb-3">
                         <h4 class="fw-bold text-white mb-0" id="simResultDisplay">Predicted AQI: <span class="spinner-border spinner-border-sm"></span></h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Row 2.5: National Leaderboard & Comparison Battle -->
+        <div class="row px-2 g-4 mb-4">
+            <!-- Leaderboard Column -->
+            <div class="col-lg-5">
+                <div class="glass-card p-4 h-100 overflow-hidden position-relative">
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="icon-box bg-info bg-opacity-25 me-3">
+                            <i class="fa-solid fa-ranking-star text-info fs-4"></i>
+                        </div>
+                        <h5 class="mb-0 fw-bold text-white">National AQI Leaderboard</h5>
+                    </div>
+                    
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <h6 class="text-success small text-uppercase fw-bold mb-3"><i class="fa-solid fa-leaf me-1"></i> Top 5 Cleanest</h6>
+                            <div id="cleanestList" class="ranking-list">
+                                <!-- Populated via JS -->
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <h6 class="text-danger small text-uppercase fw-bold mb-3"><i class="fa-solid fa-fire-flame-curved me-1"></i> Top 5 Polluted</h6>
+                            <div id="pollutedList" class="ranking-list">
+                                <!-- Populated via JS -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Comparison Battle Column -->
+            <div class="col-lg-7">
+                <div class="glass-card p-4 h-100">
+                    <div class="d-flex align-items-center justify-content-between mb-4">
+                        <div class="d-flex align-items-center">
+                            <div class="icon-box bg-danger bg-opacity-25 me-3">
+                                <i class="fa-solid fa-swords text-danger fs-4"></i>
+                            </div>
+                            <h5 class="mb-0 fw-bold text-white">City Comparison Battle</h5>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 align-items-center mb-4">
+                        <div class="col-md-5">
+                            <select class="form-select bg-dark text-white border-0 glass-input city-select" id="compareCity1">
+                                <!-- Populated via JS -->
+                            </select>
+                        </div>
+                        <div class="col-md-2 text-center">
+                            <span class="badge bg-danger bg-opacity-25 text-danger px-3 py-2 rounded-pill fw-bold">VS</span>
+                        </div>
+                        <div class="col-md-5">
+                            <select class="form-select bg-dark text-white border-0 glass-input city-select" id="compareCity2">
+                                <!-- Populated via JS -->
+                            </select>
+                        </div>
+                    </div>
+
+                    <div style="height: 250px;">
+                        <canvas id="comparisonBattleChart"></canvas>
                     </div>
                 </div>
             </div>
@@ -256,5 +414,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script type="module" src="{{ url_for('static', filename='js/main.js') }}?v=2"></script>
+    <script type="module" src="{{ url_for('static', filename='js/commute.js') }}"></script>
+    <script type="module" src="{{ url_for('static', filename='js/leaderboard.js') }}"></script>
 </body>
 </html>

@@ -209,3 +209,45 @@ body {
     box-shadow: -5px 0 15px rgba(0,0,0,0.2);
 }
 .w-20px { width: 25px; }
+
+/* Commute Safety Score Specifics */
+.icon-box {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+}
+
+#commuteResultCard {
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.fade-in {
+    animation: fadeIn 0.6s ease-out forwards;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.city-select option {
+    background: var(--bg-dark);
+}
+
+.btn-check:checked + label {
+    background-color: var(--primary);
+    border-color: var(--primary);
+    color: white;
+    box-shadow: 0 0 15px rgba(78, 115, 223, 0.4);
+}
+
+.ranking-list {
+    max-height: 300px;
+}
+
+.fs-8 {
+    font-size: 0.75rem;
+}
