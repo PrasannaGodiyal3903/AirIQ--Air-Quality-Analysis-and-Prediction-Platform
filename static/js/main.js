@@ -8,38 +8,54 @@ import { updateDateTime, populateMetricsTable, updateSimulationUI, showSimulatio
 let debounceTimer;
 
 document.addEventListener("DOMContentLoaded", async () => {
-    // 1. Initialize Date/Time in Navbar
+    // 1. Initialize Date/Time in Navbar (Always run)
     setInterval(updateDateTime, 1000);
     updateDateTime();
 
-    // 2. Initialize Charts & Maps
-    renderPollutantChart();
-    initMap();
+    // 2. Conditional Initialization
+    
+    // Prediction Panel
+    if (document.getElementById('simPM10')) {
+        setupSimulationPanel();
+    }
 
-    // 3. Fetch Initial Data (Metrics & Map)
-    loadDashboardData();
+    // Analytics Dashboard
+    if (document.getElementById('scatterChart') || document.querySelector('.performance-table')) {
+        loadAnalyticsData();
+    }
 
-    // 4. Setup Simulation Event Listeners
-    setupSimulationPanel();
+    // Map View
+    if (document.getElementById('aqiMap') || document.querySelector('.heatmap-container')) {
+        loadMapData();
+    }
+
+    // Pollutant Chart (Feature Importance)
+    if (document.getElementById('barChart')) {
+        renderPollutantChart();
+    }
 });
 
-async function loadDashboardData() {
+async function loadAnalyticsData() {
     try {
-        const [metricsData, mapData] = await Promise.all([
-            fetchMetrics(),
-            fetchMapData()
-        ]);
-
+        const metricsData = await fetchMetrics();
         if (!metricsData.error) {
             populateMetricsTable(metricsData.metrics);
             renderScatterChart(metricsData.scatter);
         }
+    } catch (err) {
+        console.error("Error loading analytics data:", err);
+    }
+}
 
+async function loadMapData() {
+    try {
+        initMap();
+        const mapData = await fetchMapData();
         if (!mapData.error) {
             renderMapMarkers(mapData.data);
         }
     } catch (err) {
-        console.error("Error loading dashboard data:", err);
+        console.error("Error loading map data:", err);
     }
 }
 
@@ -53,7 +69,8 @@ function setupSimulationPanel() {
         
         slider.addEventListener('input', (e) => {
             const valSpan = id.replace('sim', '').toLowerCase() + 'Val';
-            document.getElementById(valSpan).textContent = e.target.value;
+            const spanElem = document.getElementById(valSpan);
+            if (spanElem) spanElem.textContent = e.target.value;
             
             // Trigger Debounced API call
             triggerSimulation();
@@ -65,6 +82,8 @@ function setupSimulationPanel() {
 }
 
 function triggerSimulation() {
+    if (!document.getElementById('simPM10')) return;
+
     clearTimeout(debounceTimer);
     showSimulationLoading();
 

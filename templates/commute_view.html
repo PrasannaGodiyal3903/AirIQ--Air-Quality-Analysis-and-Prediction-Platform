@@ -1,0 +1,106 @@
+{% extends "layout.html" %}
+
+{% block title %}Commute Safety - AirIQ{% endblock %}
+{% block page_title %}Commute Safety Analyzer{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-xl-10">
+        <div class="glass-card p-5">
+            <div class="row g-5">
+                <div class="col-lg-5">
+                    <div class="mb-5">
+                        <div class="icon-box bg-warning bg-opacity-25 text-warning mb-3">
+                            <i class="fa-solid fa-route fs-3"></i>
+                        </div>
+                        <h3 class="fw-bold text-white mb-2">Exposure Calculator</h3>
+                        <p class="text-secondary small">Select your route and mode of transport to calculate your potential pollution exposure.</p>
+                    </div>
+
+                    <form id="commuteForm" class="row g-4">
+                        <div class="col-12">
+                            <label class="form-label text-secondary small text-uppercase fw-bold">Starting City</label>
+                            <select class="form-select bg-dark text-white border-0 glass-input city-select" id="startCity" required>
+                                <!-- Populated via JS -->
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label text-secondary small text-uppercase fw-bold">Destination City</label>
+                            <select class="form-select bg-dark text-white border-0 glass-input city-select" id="endCity" required>
+                                <!-- Populated via JS -->
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label text-secondary small text-uppercase fw-bold mb-3">Mode of Transport</label>
+                            <div class="d-flex gap-2 flex-wrap" id="modeSelector">
+                                <input type="radio" class="btn-check" name="travelMode" id="modeWalk" value="walk" checked>
+                                <label class="btn btn-outline-info rounded-pill px-3 py-2 fs-7" for="modeWalk"><i class="fa-solid fa-person-walking me-1"></i> Walk</label>
+
+                                <input type="radio" class="btn-check" name="travelMode" id="modeCycle" value="cycle">
+                                <label class="btn btn-outline-info rounded-pill px-3 py-2 fs-7" for="modeCycle"><i class="fa-solid fa-bicycle me-1"></i> Cycle</label>
+
+                                <input type="radio" class="btn-check" name="travelMode" id="modeCar" value="car">
+                                <label class="btn btn-outline-info rounded-pill px-3 py-2 fs-7" for="modeCar"><i class="fa-solid fa-car me-1"></i> Car</label>
+
+                                <input type="radio" class="btn-check" name="travelMode" id="modeMetro" value="train">
+                                <label class="btn btn-outline-info rounded-pill px-3 py-2 fs-7" for="modeMetro"><i class="fa-solid fa-train-subway me-1"></i> Metro/Train</label>
+                            </div>
+                        </div>
+                        <div class="col-12 mt-5">
+                            <button type="submit" class="btn btn-warning w-100 fw-bold py-3 rounded-3 shadow-lg" id="calcCommuteBtn">
+                                Calculate Safety Score
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="col-lg-7">
+                    <div id="commuteResultPlaceholder" class="h-100 d-flex flex-column align-items-center justify-content-center text-center p-5 rounded-4 border border-secondary border-opacity-10 bg-dark bg-opacity-25">
+                        <i class="fa-solid fa-calculator text-secondary fs-1 mb-3 opacity-25"></i>
+                        <h5 class="text-white-50">Ready to Calculate</h5>
+                        <p class="text-secondary small">Enter your commute details on the left to see your health risk assessment.</p>
+                    </div>
+                    
+                    <div id="commuteResultCard" class="d-none h-100 p-5 rounded-4 border shadow-lg overflow-hidden position-relative">
+                        <div class="position-absolute top-50 end-0 translate-middle-y pe-4 opacity-10" style="z-index: 0;">
+                            <i class="fa-solid fa-shield-virus" id="statusIconBg" style="font-size: 10rem;"></i>
+                        </div>
+                        
+                        <div class="position-relative" style="z-index: 1;">
+                            <div class="row align-items-center mb-5">
+                                <div class="col-sm-7">
+                                    <h1 class="display-3 fw-bold mb-0" id="resultAqi">0</h1>
+                                    <p class="text-secondary text-uppercase fw-bold mb-3">Exposure AQI</p>
+                                    <div class="badge px-4 py-2 rounded-pill fs-6" id="resultStatus">SAFE</div>
+                                </div>
+                                <div class="col-sm-5 text-sm-end">
+                                    <div class="mb-3">
+                                        <div class="text-secondary small mb-1">PM2.5 Exposure</div>
+                                        <div class="h5 fw-bold mb-0 text-white" id="resultPm">0 µg/m³</div>
+                                    </div>
+                                    <div>
+                                        <div class="text-secondary small mb-1">Commute Path</div>
+                                        <div class="h6 fw-bold mb-0 text-white" id="resultRoute">A to B</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <hr class="border-secondary opacity-25 my-4">
+                            
+                            <div class="d-flex align-items-start bg-dark bg-opacity-50 p-4 rounded-4 border border-info border-opacity-10">
+                                <div class="icon-box bg-info bg-opacity-20 text-info me-3 rounded-circle">
+                                    <i class="fa-solid fa-hand-holding-medical"></i>
+                                </div>
+                                <div>
+                                    <h6 class="fw-bold text-info mb-1">Health Recommendation</h6>
+                                    <p class="mb-0 text-white-50 small" id="resultAdvice">Calculate to see advice.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

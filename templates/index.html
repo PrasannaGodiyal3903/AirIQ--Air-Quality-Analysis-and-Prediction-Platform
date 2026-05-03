@@ -1,420 +1,104 @@
-<!DOCTYPE html>
-<html lang="en" data-bs-theme="dark">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AQI Prediction & Monitoring System</title>
-    <!-- Bootstrap 5 -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- FontAwesome for Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Custom Styles -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Leaflet Maps -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-</head>
-<body>
+{% extends "layout.html" %}
 
-    <!-- 1. Navbar -->
-    <nav class="navbar navbar-expand-lg glass-navbar fixed-top">
-        <div class="container-fluid pe-4 ps-4">
-            <a class="navbar-brand fw-bold text-white d-flex align-items-center" href="#">
-                <i class="fa-solid fa-wind text-info me-2 fs-3"></i>
-                AirIQ - Smart AQI Prediction and Analysis Platform
-            </a>
-            
-            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navItems">
-                <i class="fa-solid fa-bars text-white"></i>
-            </button>
-            <div class="collapse navbar-collapse justify-content-end" id="navItems">
-                <div class="d-flex align-items-center gap-4">
-                    <!-- City Dropdown -->
-                    <select class="form-select bg-dark text-white border-0 glass-input" id="citySelector">
-                        <option value="Delhi">Delhi</option>
-                        <option value="Dehradun">Dehradun</option>
-                        <option value="Bangalore">Bangalore</option>
-                    </select>
+{% block title %}Home - AirIQ Smart AQI Platform{% endblock %}
+{% block page_title %}Platform Overview{% endblock %}
 
-                    <!-- Date/Time Display -->
-                    <div class="datetime-display d-flex flex-column text-end text-light">
-                        <span id="currentDate" class="fw-semibold" style="font-size: 0.9rem;">--</span>
-                        <span id="currentTime" class="text-info fs-6 fw-bold">--:--</span>
-                    </div>
-
-                    <!-- User Icon -->
-                    <div class="user-profile ms-2">
-                        <i class="fa-solid fa-circle-user fs-2 text-secondary hover-scale"></i>
+{% block content %}
+<div class="row g-4 mb-5">
+    <div class="col-12">
+        <div class="glass-card p-5 border-0 bg-primary bg-opacity-10 position-relative overflow-hidden">
+            <div class="position-relative" style="z-index: 1;">
+                <h1 class="display-4 fw-bold text-white mb-3">Welcome to <span class="text-info">AirIQ</span></h1>
+                <p class="lead text-secondary mb-4" style="max-width: 600px;">
+                    Experience next-generation air quality monitoring. Our platform uses advanced machine learning to provide accurate predictions, commute safety scores, and regional analysis.
+                </p>
+                <div id="smartAlert" class="alert d-inline-flex align-items-center shadow-sm rounded-pill border-0 px-4 py-2 bg-dark bg-opacity-50" role="alert">
+                    <i id="smartAlertIcon" class="fa-solid fa-circle-check text-success fs-5 me-3"></i>
+                    <div id="smartAlertText" class="fw-medium text-light small">
+                        Systems Online: ML Models Initialized & Ready
                     </div>
                 </div>
+            </div>
+            <div class="position-absolute top-50 end-0 translate-middle-y pe-5 d-none d-xl-block opacity-25" style="z-index: 0;">
+                <i class="fa-solid fa-wind text-info" style="font-size: 15rem;"></i>
             </div>
         </div>
-    </nav>
+    </div>
+</div>
 
-    <!-- Main Content wrapper -->
-    <div class="main-content-wrapper container-fluid pt-5 mt-4 pb-5">
-        
-        <!-- 7. Smart Alert Section -->
-        <div class="row px-2 mb-3 mt-3">
-            <div class="col-12">
-                <div id="smartAlert" class="alert d-flex align-items-center shadow-sm rounded-4 border-0" role="alert">
-                    <i id="smartAlertIcon" class="fa-solid fa-triangle-exclamation fs-4 me-3"></i>
-                    <div>
-                        <h5 class="alert-heading mb-0 fw-bold" id="smartAlertText">🔴 AQI is Very Poor — Avoid Outdoor Activities</h5>
-                    </div>
-                </div>
+<h4 class="fw-bold text-white mb-4">Explore Features</h4>
+
+<div class="row g-4">
+    <!-- Feature 1: Prediction -->
+    <div class="col-md-6 col-xl-4">
+        <a href="/prediction" class="feature-card">
+            <div class="icon-box bg-warning bg-opacity-20 text-warning">
+                <i class="fa-solid fa-sliders"></i>
             </div>
-        </div>
-
-        <div class="row px-2 g-4 mb-4">
-            <!-- 2. MODEL PERFORMANCE SECTION -->
-            <div class="col-lg-6">
-                <div class="glass-card p-4 h-100">
-                    <h5 class="fw-bold text-white mb-3"><i class="fa-solid fa-microchip text-info me-2"></i> Models & Metrics</h5>
-                    <p class="text-secondary fs-7 mb-3 fst-italic">"We compared multiple models and selected the best based on R² score."</p>
-                    <div class="table-responsive">
-                        <table class="table table-borderless text-white align-middle mb-0 performance-table">
-                            <thead class="text-secondary text-uppercase fs-7 border-bottom border-secondary">
-                                <tr>
-                                    <th class="fw-normal">Model</th>
-                                    <th class="fw-normal text-center">MAE</th>
-                                    <th class="fw-normal text-center">RMSE</th>
-                                    <th class="fw-normal text-end pe-3">R² Score</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>Linear Regression</td>
-                                    <td class="text-center font-monospace">51.87</td>
-                                    <td class="text-center font-monospace">63.75</td>
-                                    <td class="text-end pe-3 font-monospace">0.725</td>
-                                </tr>
-                                <tr>
-                                    <td>Random Forest</td>
-                                    <td class="text-center font-monospace">49.31</td>
-                                    <td class="text-center font-monospace">63.06</td>
-                                    <td class="text-end pe-3 font-monospace">0.731</td>
-                                </tr>
-                                <tr>
-                                    <td>Gradient Boosting</td>
-                                    <td class="text-center font-monospace">50.63</td>
-                                    <td class="text-center font-monospace">62.96</td>
-                                    <td class="text-end pe-3 font-monospace">0.732</td>
-                                </tr>
-                                <tr>
-                                    <td>AdaBoost</td>
-                                    <td class="text-center font-monospace">52.08</td>
-                                    <td class="text-center font-monospace">63.98</td>
-                                    <td class="text-end pe-3 font-monospace">0.723</td>
-                                </tr>
-                                <tr class="best-model-row" data-bs-toggle="tooltip" title="Hybrid Model averages LR & GBR predictions">
-                                    <td class="fw-bold text-warning"><i class="fa-solid fa-crown me-1"></i> Hybrid Model</td>
-                                    <td class="text-center text-muted font-monospace">—</td>
-                                    <td class="text-center text-muted font-monospace">—</td>
-                                    <td class="text-end pe-3 fw-bold text-warning font-monospace">0.759 (Best)</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 3. ACTUAL VS PREDICTED GRAPH -->
-            <div class="col-lg-6">
-                <div class="glass-card p-4 h-100">
-                    <h5 class="fw-bold text-white mb-3"><i class="fa-solid fa-chart-scatter text-warning me-2"></i> Actual vs Predicted AQI</h5>
-                    <div style="height: 250px;">
-                        <canvas id="scatterChart"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="row px-2 g-4 mb-4">
-            <!-- 4. AQI Heatmap -->
-            <div class="col-lg-8">
-                <div class="glass-card p-4 h-100">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h4 class="mb-0 text-white fw-bold"><i class="fa-solid fa-map-location-dot me-2 text-primary"></i> Regional AQI Heatmap</h4>
-                        <div class="heatmap-legend d-flex flex-wrap gap-2 text-secondary fs-7 align-items-center">
-                            <span class="fw-bold me-1 text-light">Legend: </span>
-                            <div class="d-flex align-items-center"><div class="legend-color aqi-good me-1"></div> 0-50</div>
-                            <div class="d-flex align-items-center"><div class="legend-color aqi-moderate me-1"></div> 51-100</div>
-                            <div class="d-flex align-items-center"><div class="legend-color aqi-poor me-1"></div> 101-200</div>
-                            <div class="d-flex align-items-center"><div class="legend-color aqi-very-poor me-1"></div> 201-300</div>
-                            <div class="d-flex align-items-center"><div class="legend-color aqi-severe me-1"></div> 301-400</div>
-                            <div class="d-flex align-items-center"><div class="legend-color aqi-hazardous me-1"></div> 401-500</div>
-                            <div class="ms-2 badge bg-dark text-muted fw-normal border border-secondary shadow-sm">Darker color = Higher Pollution</div>
-                        </div>
-                    </div>
-                    
-                    <div class="heatmap-container rounded-4 position-relative p-0 overflow-hidden" style="min-height: 450px; background: rgba(0,0,0,0.2);">
-                        <iframe src="/heatmap" class="w-100 h-100 border-0" style="min-height: 450px; border-radius: 16px;"></iframe>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 5. Commute Safety Score Section -->
-            <div class="col-12 mt-4">
-                <div class="glass-card p-4 h-100">
-                    <div class="d-flex align-items-center justify-content-between mb-4">
-                        <div class="d-flex align-items-center">
-                            <div class="icon-box bg-warning bg-opacity-25 me-3">
-                                <i class="fa-solid fa-route text-warning fs-4"></i>
-                            </div>
-                            <h4 class="mb-0 fw-bold">Commute Safety Score</h4>
-                        </div>
-                        <span class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 px-3 py-2 rounded-pill">
-                            New Feature
-                        </span>
-                    </div>
-
-                    <div class="row g-4">
-                        <div class="col-md-5">
-                            <form id="commuteForm" class="row g-3">
-                                <div class="col-12">
-                                    <label class="form-label text-secondary small text-uppercase fw-bold">Start Location</label>
-                                    <select class="form-select bg-dark text-white border-0 glass-input city-select" id="startCity" required>
-                                        <!-- Will be populated via JS -->
-                                    </select>
-                                </div>
-                                <div class="col-12">
-                                    <label class="form-label text-secondary small text-uppercase fw-bold">End Location</label>
-                                    <select class="form-select bg-dark text-white border-0 glass-input city-select" id="endCity" required>
-                                        <!-- Will be populated via JS -->
-                                    </select>
-                                </div>
-                                <div class="col-12">
-                                    <label class="form-label text-secondary small text-uppercase fw-bold">Travel Mode</label>
-                                    <div class="d-flex gap-2 flex-wrap" id="modeSelector">
-                                        <input type="radio" class="btn-check" name="travelMode" id="modeWalk" value="walk" checked>
-                                        <label class="btn btn-outline-info rounded-pill px-3" for="modeWalk"><i class="fa-solid fa-person-walking me-1"></i> Walk</label>
-
-                                        <input type="radio" class="btn-check" name="travelMode" id="modeCycle" value="cycle">
-                                        <label class="btn btn-outline-info rounded-pill px-3" for="modeCycle"><i class="fa-solid fa-bicycle me-1"></i> Cycle</label>
-
-                                        <input type="radio" class="btn-check" name="travelMode" id="modeCar" value="car">
-                                        <label class="btn btn-outline-info rounded-pill px-3" for="modeCar"><i class="fa-solid fa-car me-1"></i> Car</label>
-
-                                        <input type="radio" class="btn-check" name="travelMode" id="modeMetro" value="train">
-                                        <label class="btn btn-outline-info rounded-pill px-3" for="modeMetro"><i class="fa-solid fa-train-subway me-1"></i> Train/Metro</label>
-                                    </div>
-                                </div>
-                                <div class="col-12 mt-4">
-                                    <button type="submit" class="btn btn-warning w-100 fw-bold py-3 rounded-3 shadow-sm" id="calcCommuteBtn">
-                                        Calculate Exposure Score
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-
-                        <div class="col-md-7">
-                            <div id="commuteResultPlaceholder" class="h-100 d-flex flex-column align-items-center justify-content-center text-center p-5 rounded-4 border border-secondary border-opacity-10 bg-dark bg-opacity-25">
-                                <i class="fa-solid fa-calculator text-secondary fs-1 mb-3 opacity-25"></i>
-                                <p class="text-secondary">Enter your commute details to calculate safety and exposure levels.</p>
-                            </div>
-                            
-                            <div id="commuteResultCard" class="d-none h-100 p-4 rounded-4 border shadow-lg overflow-hidden position-relative" style="z-index: 1;">
-                                <div class="position-absolute top-50 end-0 translate-middle-y pe-4 opacity-10" style="z-index: -1;">
-                                    <i class="fa-solid fa-shield-virus" id="statusIconBg" style="font-size: 8rem;"></i>
-                                </div>
-                                <div class="row align-items-center">
-                                    <div class="col-sm-6">
-                                        <h2 class="display-4 fw-bold mb-0" id="resultAqi">0</h2>
-                                        <p class="text-secondary small text-uppercase mb-3">Est. AQI Exposure</p>
-                                        <div class="badge px-3 py-2 rounded-pill mb-3 fs-6" id="resultStatus">SAFE</div>
-                                    </div>
-                                    <div class="col-sm-6 text-sm-end">
-                                        <div class="mb-2">
-                                            <span class="text-secondary small">PM2.5 Exposure:</span>
-                                            <span class="fw-bold" id="resultPm">0 µg/m³</span>
-                                        </div>
-                                        <div class="mb-4">
-                                            <span class="text-secondary small">Route:</span>
-                                            <span class="fw-bold" id="resultRoute">A to B</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <hr class="border-secondary opacity-10">
-                                <div class="d-flex align-items-start mt-3">
-                                    <i class="fa-solid fa-circle-info text-info me-3 mt-1"></i>
-                                    <div>
-                                        <p class="mb-0 text-white" id="resultAdvice">Calculate to see advice.</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 6. WHAT-IF SIMULATION PANEL -->
-            <div class="col-lg-4">
-                <div class="glass-card p-4 h-100 simulation-panel position-relative overflow-hidden">
-                    <h5 class="mb-3 text-white fw-bold position-relative"><i class="fa-solid fa-sliders text-warning me-2"></i> What-If Simulation</h5>
-                    
-                    <div class="simulation-controls position-relative">
-                        <div class="mb-3">
-                            <label class="form-label text-light d-flex justify-content-between fs-7 mb-1">
-                                <span>CO</span><span id="coVal" class="text-info font-monospace">1.5</span>
-                            </label>
-                            <input type="range" class="form-range custom-slider" id="simCO" min="0" max="10" step="0.1" value="1.5">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label text-light d-flex justify-content-between fs-7 mb-1">
-                                <span>NO2</span><span id="no2Val" class="text-warning font-monospace">45</span>
-                            </label>
-                            <input type="range" class="form-range custom-slider" id="simNO2" min="0" max="200" step="1" value="45">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label text-light d-flex justify-content-between fs-7 mb-1">
-                                <span>PM10</span><span id="pm10Val" class="text-danger font-monospace">180</span>
-                            </label>
-                            <input type="range" class="form-range custom-slider" id="simPM10" min="0" max="500" step="1" value="180">
-                        </div>
-                        <div class="mb-4">
-                            <label class="form-label text-light d-flex justify-content-between fs-7 mb-1">
-                                <span>OZONE</span><span id="ozoneVal" class="text-success font-monospace">35</span>
-                            </label>
-                            <input type="range" class="form-range custom-slider" id="simOzone" min="0" max="150" step="1" value="35">
-                        </div>
-                    </div>
-
-                    <div class="mt-2 text-center">
-                        <hr class="border-secondary mb-3">
-                        <h4 class="fw-bold text-white mb-0" id="simResultDisplay">Predicted AQI: <span class="spinner-border spinner-border-sm"></span></h4>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Row 2.5: National Leaderboard & Comparison Battle -->
-        <div class="row px-2 g-4 mb-4">
-            <!-- Leaderboard Column -->
-            <div class="col-lg-5">
-                <div class="glass-card p-4 h-100 overflow-hidden position-relative">
-                    <div class="d-flex align-items-center mb-4">
-                        <div class="icon-box bg-info bg-opacity-25 me-3">
-                            <i class="fa-solid fa-ranking-star text-info fs-4"></i>
-                        </div>
-                        <h5 class="mb-0 fw-bold text-white">National AQI Leaderboard</h5>
-                    </div>
-                    
-                    <div class="row g-3">
-                        <div class="col-6">
-                            <h6 class="text-success small text-uppercase fw-bold mb-3"><i class="fa-solid fa-leaf me-1"></i> Top 5 Cleanest</h6>
-                            <div id="cleanestList" class="ranking-list">
-                                <!-- Populated via JS -->
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <h6 class="text-danger small text-uppercase fw-bold mb-3"><i class="fa-solid fa-fire-flame-curved me-1"></i> Top 5 Polluted</h6>
-                            <div id="pollutedList" class="ranking-list">
-                                <!-- Populated via JS -->
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Comparison Battle Column -->
-            <div class="col-lg-7">
-                <div class="glass-card p-4 h-100">
-                    <div class="d-flex align-items-center justify-content-between mb-4">
-                        <div class="d-flex align-items-center">
-                            <div class="icon-box bg-danger bg-opacity-25 me-3">
-                                <i class="fa-solid fa-swords text-danger fs-4"></i>
-                            </div>
-                            <h5 class="mb-0 fw-bold text-white">City Comparison Battle</h5>
-                        </div>
-                    </div>
-
-                    <div class="row g-3 align-items-center mb-4">
-                        <div class="col-md-5">
-                            <select class="form-select bg-dark text-white border-0 glass-input city-select" id="compareCity1">
-                                <!-- Populated via JS -->
-                            </select>
-                        </div>
-                        <div class="col-md-2 text-center">
-                            <span class="badge bg-danger bg-opacity-25 text-danger px-3 py-2 rounded-pill fw-bold">VS</span>
-                        </div>
-                        <div class="col-md-5">
-                            <select class="form-select bg-dark text-white border-0 glass-input city-select" id="compareCity2">
-                                <!-- Populated via JS -->
-                            </select>
-                        </div>
-                    </div>
-
-                    <div style="height: 250px;">
-                        <canvas id="comparisonBattleChart"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Row 3: Pollutants, City Compare, Future features -->
-        <div class="row px-2 g-4">
-            
-            <!-- 5. POLLUTANT ANALYSIS -->
-            <div class="col-lg-4">
-                <div class="glass-card p-4 h-100">
-                    <h5 class="fw-bold text-white mb-3"><i class="fa-solid fa-chart-column text-info me-2"></i> Pollutant Contribution to AQI</h5>
-                    <div style="height: 250px;">
-                        <canvas id="barChart"></canvas>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 8. MODEL COMPARISON DASHBOARD -->
-            <div class="col-lg-8">
-                <div class="glass-card p-4 h-100 position-relative overflow-hidden">
-                    <h5 class="fw-bold text-white mb-3 position-relative"><i class="fa-solid fa-scale-balanced text-warning me-2"></i> Explainable AI Dashboard</h5>
-                    <div class="table-responsive">
-                        <table class="table table-borderless table-hover text-white align-middle mb-2 comparison-table">
-                            <thead class="text-secondary text-uppercase fs-7 border-bottom border-secondary">
-                                <tr>
-                                    <th class="fw-normal">Model</th>
-                                    <th class="fw-normal text-center">AQI</th>
-                                    <th class="fw-normal text-center">R²</th>
-                                    <th class="fw-normal text-center">RMSE</th>
-                                    <th class="fw-normal text-center">MAE</th>
-                                </tr>
-                            </thead>
-                            <tbody id="comparisonTableBody">
-                                <!-- Populated dynamically by UI.js -->
-                            </tbody>
-                        </table>
-                    </div>
-                    
-                    <div class="row mt-4">
-                        <div class="col-md-6">
-                            <h6 class="text-info fw-bold fs-7 text-uppercase"><i class="fa-solid fa-lightbulb me-2"></i> Automated Insights</h6>
-                            <div id="aiInsightsPanel" class="p-3 bg-dark bg-opacity-50 rounded-3 border border-secondary border-opacity-50 fs-7 text-light h-100">
-                                <!-- Populated dynamically -->
-                            </div>
-                        </div>
-                        <div class="col-md-6 mt-3 mt-md-0">
-                            <h6 class="text-warning fw-bold fs-7 text-uppercase"><i class="fa-solid fa-list-ol me-2"></i> Live Model Ranking</h6>
-                            <div class="p-3 bg-dark bg-opacity-50 rounded-3 border border-secondary border-opacity-50 fs-7 text-light h-100">
-                                <ol id="aiRankingPanel" class="mb-0 ps-3">
-                                    <!-- Populated dynamically -->
-                                </ol>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
+            <h3>AQI Prediction</h3>
+            <p>Simulate different pollutant levels and get real-time AI-powered AQI predictions using our Hybrid Ensemble Model.</p>
+            <i class="fa-solid fa-arrow-right arrow-icon"></i>
+        </a>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script type="module" src="{{ url_for('static', filename='js/main.js') }}?v=2"></script>
-    <script type="module" src="{{ url_for('static', filename='js/commute.js') }}"></script>
-    <script type="module" src="{{ url_for('static', filename='js/leaderboard.js') }}"></script>
-</body>
-</html>
+    <!-- Feature 2: Analytics -->
+    <div class="col-md-6 col-xl-4">
+        <a href="/analytics" class="feature-card">
+            <div class="icon-box bg-info bg-opacity-20 text-info">
+                <i class="fa-solid fa-chart-line"></i>
+            </div>
+            <h3>Analytics Dashboard</h3>
+            <p>Deep dive into model performance metrics, scatter charts, and explainable AI insights to understand the science behind predictions.</p>
+            <i class="fa-solid fa-arrow-right arrow-icon"></i>
+        </a>
+    </div>
+
+    <!-- Feature 3: Heatmap -->
+    <div class="col-md-6 col-xl-4">
+        <a href="/map-view" class="feature-card">
+            <div class="icon-box bg-primary bg-opacity-20 text-primary">
+                <i class="fa-solid fa-map-location-dot"></i>
+            </div>
+            <h3>Regional Heatmap</h3>
+            <p>Explore an interactive map of India visualizing real-time air quality levels across major cities with detailed markers.</p>
+            <i class="fa-solid fa-arrow-right arrow-icon"></i>
+        </a>
+    </div>
+
+    <!-- Feature 4: Commute -->
+    <div class="col-md-6 col-xl-4">
+        <a href="/commute-view" class="feature-card">
+            <div class="icon-box bg-warning bg-opacity-10 text-warning">
+                <i class="fa-solid fa-route"></i>
+            </div>
+            <h3>Commute Safety</h3>
+            <p>Calculate your personal pollution exposure score based on your commute route and mode of transport.</p>
+            <i class="fa-solid fa-arrow-right arrow-icon"></i>
+        </a>
+    </div>
+
+    <!-- Feature 5: Leaderboard -->
+    <div class="col-md-6 col-xl-4">
+        <a href="/leaderboard-view" class="feature-card">
+            <div class="icon-box bg-info bg-opacity-10 text-info">
+                <i class="fa-solid fa-ranking-star"></i>
+            </div>
+            <h3>National Leaderboard</h3>
+            <p>Stay informed about the cleanest and most polluted cities across the country with our daily updated rankings.</p>
+            <i class="fa-solid fa-arrow-right arrow-icon"></i>
+        </a>
+    </div>
+
+    <!-- Feature 6: Comparison -->
+    <div class="col-md-6 col-xl-4">
+        <a href="/comparison-view" class="feature-card">
+            <div class="icon-box bg-danger bg-opacity-10 text-danger">
+                <i class="fa-solid fa-swords"></i>
+            </div>
+            <h3>City Comparison</h3>
+            <p>Battle it out between two cities to see which one has better air quality across all pollutant parameters.</p>
+            <i class="fa-solid fa-arrow-right arrow-icon"></i>
+        </a>
+    </div>
+</div>
+{% endblock %}

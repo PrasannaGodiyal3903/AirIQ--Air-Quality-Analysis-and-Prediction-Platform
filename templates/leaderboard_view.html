@@ -1,0 +1,66 @@
+{% extends "layout.html" %}
+
+{% block title %}Leaderboard - AirIQ{% endblock %}
+{% block page_title %}National AQI Leaderboard{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-xl-9">
+        <div class="glass-card p-5 mb-4 position-relative overflow-hidden">
+            <div class="position-absolute top-0 end-0 p-5 opacity-10">
+                <i class="fa-solid fa-ranking-star" style="font-size: 15rem;"></i>
+            </div>
+            
+            <div class="position-relative">
+                <div class="d-flex align-items-center mb-5">
+                    <div class="icon-box bg-info bg-opacity-25 text-info me-3">
+                        <i class="fa-solid fa-trophy fs-3"></i>
+                    </div>
+                    <div>
+                        <h2 class="fw-bold text-white mb-1">City Rankings</h2>
+                        <p class="text-secondary mb-0">Daily updated air quality rankings for major Indian cities.</p>
+                    </div>
+                </div>
+                
+                <div class="row g-5">
+                    <!-- Cleanest Cities -->
+                    <div class="col-md-6">
+                        <div class="p-4 rounded-4 bg-success bg-opacity-10 border border-success border-opacity-10 h-100">
+                            <div class="d-flex align-items-center mb-4">
+                                <i class="fa-solid fa-leaf text-success fs-4 me-3"></i>
+                                <h5 class="fw-bold text-success text-uppercase mb-0">Top 5 Cleanest</h5>
+                            </div>
+                            <div id="cleanestList" class="ranking-list">
+                                <!-- Populated via JS -->
+                                <div class="text-center py-5">
+                                    <div class="spinner-border text-success spinner-border-sm" role="status"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Polluted Cities -->
+                    <div class="col-md-6">
+                        <div class="p-4 rounded-4 bg-danger bg-opacity-10 border border-danger border-opacity-10 h-100">
+                            <div class="d-flex align-items-center mb-4">
+                                <i class="fa-solid fa-fire-flame-curved text-danger fs-4 me-3"></i>
+                                <h5 class="fw-bold text-danger text-uppercase mb-0">Top 5 Most Polluted</h5>
+                            </div>
+                            <div id="pollutedList" class="ranking-list">
+                                <!-- Populated via JS -->
+                                <div class="text-center py-5">
+                                    <div class="spinner-border text-danger spinner-border-sm" role="status"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="p-4 bg-dark bg-opacity-25 rounded-4 border border-secondary border-opacity-10 text-center">
+            <p class="text-secondary small mb-0"><i class="fa-solid fa-circle-info me-2"></i> Rankings are calculated based on the 24-hour weighted average of multiple pollutant parameters.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

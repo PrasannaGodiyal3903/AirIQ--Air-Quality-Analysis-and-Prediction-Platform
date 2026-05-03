@@ -1,0 +1,92 @@
+{% extends "layout.html" %}
+
+{% block title %}Analytics - AirIQ{% endblock %}
+{% block page_title %}Explainable AI & Performance Analytics{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+    <!-- Model Performance Summary -->
+    <div class="col-lg-6">
+        <div class="glass-card p-4 h-100">
+            <h5 class="fw-bold text-white mb-4"><i class="fa-solid fa-microchip text-info me-2"></i> ML Model Benchmark</h5>
+            <div class="table-responsive">
+                <table class="table table-borderless text-white align-middle mb-0 performance-table">
+                    <thead class="text-secondary text-uppercase fs-8 border-bottom border-secondary">
+                        <tr>
+                            <th class="fw-normal">Model</th>
+                            <th class="fw-normal text-center">MAE</th>
+                            <th class="fw-normal text-center">RMSE</th>
+                            <th class="fw-normal text-end">R² Score</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Populated via JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Actual vs Predicted -->
+    <div class="col-lg-6">
+        <div class="glass-card p-4 h-100">
+            <h5 class="fw-bold text-white mb-4"><i class="fa-solid fa-chart-scatter text-warning me-2"></i> Prediction Accuracy</h5>
+            <div style="height: 300px;">
+                <canvas id="scatterChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Explainable AI Dashboard -->
+    <div class="col-12">
+        <div class="glass-card p-4">
+            <h5 class="fw-bold text-white mb-4"><i class="fa-solid fa-scale-balanced text-primary me-2"></i> Explainable AI Dashboard</h5>
+            <div class="table-responsive">
+                <table class="table table-borderless table-hover text-white align-middle mb-4 comparison-table">
+                    <thead class="text-secondary text-uppercase fs-8 border-bottom border-secondary">
+                        <tr>
+                            <th class="fw-normal">Model Architecture</th>
+                            <th class="fw-normal text-center">Predicted AQI</th>
+                            <th class="fw-normal text-center">R²</th>
+                            <th class="fw-normal text-center">RMSE</th>
+                            <th class="fw-normal text-center">MAE</th>
+                        </tr>
+                    </thead>
+                    <tbody id="comparisonTableBody">
+                        <!-- Populated dynamically -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="p-4 bg-dark bg-opacity-50 rounded-4 border border-info border-opacity-10">
+                        <h6 class="text-info fw-bold text-uppercase small mb-3"><i class="fa-solid fa-lightbulb me-2"></i> AI-Generated Insights</h6>
+                        <div id="aiInsightsPanel" class="text-light small">
+                            <p class="text-secondary">Generating insights based on current model performance...</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="p-4 bg-dark bg-opacity-50 rounded-4 border border-warning border-opacity-10">
+                        <h6 class="text-warning fw-bold text-uppercase small mb-3"><i class="fa-solid fa-list-ol me-2"></i> Model Ranking Logic</h6>
+                        <ol id="aiRankingPanel" class="mb-0 text-secondary small">
+                            <!-- Populated dynamically -->
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pollutant Contribution -->
+    <div class="col-lg-4">
+        <div class="glass-card p-4">
+            <h5 class="fw-bold text-white mb-4"><i class="fa-solid fa-chart-column text-success me-2"></i> Feature Importance</h5>
+            <div style="height: 250px;">
+                <canvas id="barChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

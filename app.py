@@ -122,8 +122,38 @@ def get_cat(aqi):
 
 @app.route("/")
 def home():
-    """Render main UI"""
+    """Render landing page with feature cards"""
     return render_template("index.html")
+
+@app.route("/prediction")
+def prediction():
+    """Render AQI prediction page"""
+    return render_template("prediction.html")
+
+@app.route("/analytics")
+def analytics():
+    """Render analytics and model performance page"""
+    return render_template("analytics.html")
+
+@app.route("/map-view")
+def map_view():
+    """Render heatmap visualization page"""
+    return render_template("map_view.html")
+
+@app.route("/commute-view")
+def commute_view():
+    """Render commute safety score page"""
+    return render_template("commute_view.html")
+
+@app.route("/leaderboard-view")
+def leaderboard_view():
+    """Render national leaderboard page"""
+    return render_template("leaderboard_view.html")
+
+@app.route("/comparison-view")
+def comparison_view():
+    """Render city comparison page"""
+    return render_template("comparison_view.html")
 
 @app.route("/api/metrics")
 def get_metrics():
