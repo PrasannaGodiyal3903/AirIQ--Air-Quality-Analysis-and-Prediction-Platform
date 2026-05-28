@@ -166,7 +166,7 @@ To achieve high predictive accuracy, airIQ implements a weighted hybrid ensemble
 ## 1️⃣ Clone Repository
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/airIQ.git
+git clone https://github.com/PrasannaGodiyal3903/AirIQ--Air-Quality-Analysis-and-Prediction-Platform.git
 cd airIQ
 ```
 
