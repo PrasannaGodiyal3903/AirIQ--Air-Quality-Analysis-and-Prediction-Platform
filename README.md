@@ -54,10 +54,10 @@ WAQI API Token:
 
 Get a free token from aqicn.org.
 Update WAQI_TOKEN in app.py.
-Launch:
 
+Launch:
 python app.py
-Navigate to http://localhost:5000 (or the port specified in app.py).
+
 
 📁 Project Structure
 app.py: Core REST API & ML Orchestrator.
