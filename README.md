@@ -43,7 +43,7 @@ Data: WAQI REST API, CPCB Static Dataset.
 ⚙️ Installation & Setup
 Clone & Environment:
 
-git clone https://github.com/GitH-Priyanshu/airIQ.git
+git clone https://github.com/PrasannaGodiyal3903/AirIQ--Air-Quality-Analysis-and-Prediction-Platform.git
 cd airIQ
 python -m venv venv
 source venv/bin/activate  # venv\Scripts\activate on Windows
