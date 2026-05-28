@@ -1,0 +1,7 @@
+venv/
+__pycache__/
+*.pyc
+.env
+.vscode/
+viva_notes.md
+VIVA_NOTES.md

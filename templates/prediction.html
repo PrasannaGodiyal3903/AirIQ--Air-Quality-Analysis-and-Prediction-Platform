@@ -1,0 +1,105 @@
+{% extends "layout.html" %}
+
+{% block title %}What-If Simulation - AirIQ{% endblock %}
+{% block page_title %}Real-Time AQI Simulation{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-xl-9">
+        <div class="glass-card p-5 mb-4 shadow-lg border-0">
+            <div class="d-flex align-items-center mb-4">
+                <div class="icon-box bg-warning bg-opacity-25 text-warning me-4 rounded-4 p-3 shadow-sm">
+                    <i class="fa-solid fa-sliders fs-2"></i>
+                </div>
+                <div>
+                    <h2 class="fw-bold text-white mb-1">What-If Simulation</h2>
+                    <p class="text-secondary mb-0">Adjust all 6 major pollutants to see real-time predictions from our trained Gradient Boosting Model.</p>
+                </div>
+            </div>
+
+            <div class="row g-5">
+                <!-- Slider Controls -->
+                <div class="col-md-7">
+                    <div class="simulation-controls row g-4">
+                        <!-- CO Slider -->
+                        <div class="col-md-6">
+                            <label class="form-label text-light d-flex justify-content-between mb-2">
+                                <span class="fw-medium">CO (Carbon Monoxide)</span>
+                                <span id="coVal" class="text-info font-monospace fw-bold">1.5</span>
+                            </label>
+                            <input type="range" class="form-range custom-slider" id="simCO" min="0" max="10" step="0.1" value="1.5">
+                        </div>
+                        
+                        <!-- NO2 Slider -->
+                        <div class="col-md-6">
+                            <label class="form-label text-light d-flex justify-content-between mb-2">
+                                <span class="fw-medium">NO2 (Nitrogen Dioxide)</span>
+                                <span id="no2Val" class="text-warning font-monospace fw-bold">45</span>
+                            </label>
+                            <input type="range" class="form-range custom-slider" id="simNO2" min="0" max="200" step="1" value="45">
+                        </div>
+
+                        <!-- NH3 Slider -->
+                        <div class="col-md-6">
+                            <label class="form-label text-light d-flex justify-content-between mb-2">
+                                <span class="fw-medium">NH3 (Ammonia)</span>
+                                <span id="nh3Val" class="text-info font-monospace fw-bold">25</span>
+                            </label>
+                            <input type="range" class="form-range custom-slider" id="simNH3" min="0" max="100" step="1" value="25">
+                        </div>
+                        
+                        <!-- PM10 Slider -->
+                        <div class="col-md-6">
+                            <label class="form-label text-light d-flex justify-content-between mb-2">
+                                <span class="fw-medium">PM10 (Particulate Matter)</span>
+                                <span id="pm10Val" class="text-danger font-monospace fw-bold">180</span>
+                            </label>
+                            <input type="range" class="form-range custom-slider" id="simPM10" min="0" max="500" step="1" value="180">
+                        </div>
+                        
+                        <!-- Ozone Slider -->
+                        <div class="col-md-6">
+                            <label class="form-label text-light d-flex justify-content-between mb-2">
+                                <span class="fw-medium">OZONE (O3)</span>
+                                <span id="ozoneVal" class="text-success font-monospace fw-bold">35</span>
+                            </label>
+                            <input type="range" class="form-range custom-slider" id="simOzone" min="0" max="150" step="1" value="35">
+                        </div>
+
+                        <!-- SO2 Slider -->
+                        <div class="col-md-6">
+                            <label class="form-label text-light d-flex justify-content-between mb-2">
+                                <span class="fw-medium">SO2 (Sulfur Dioxide)</span>
+                                <span id="so2Val" class="text-danger font-monospace fw-bold">15</span>
+                            </label>
+                            <input type="range" class="form-range custom-slider" id="simSO2" min="0" max="100" step="1" value="15">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Result Card -->
+                <div class="col-md-5 d-flex align-items-center">
+                    <div class="text-center w-100 p-5 rounded-4 bg-dark bg-opacity-50 border border-secondary border-opacity-25 shadow-inner">
+                        <h5 class="text-secondary text-uppercase ls-wide small fw-bold mb-4">Predicted AQI Result</h5>
+                        <div id="simResultDisplay" class="py-3 transition-all">
+                            <div class="spinner-border text-info" role="status"></div>
+                            <p class="text-white-50 mt-2 small">Predicting...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Info Alert -->
+        <div class="alert alert-info border-0 rounded-4 p-4 shadow-sm bg-info bg-opacity-10">
+            <div class="d-flex">
+                <i class="fa-solid fa-circle-info fs-4 text-info me-3 mt-1"></i>
+                <div>
+                    <h6 class="fw-bold text-info mb-1">Gradient Boosting Regressor</h6>
+                    <p class="mb-0 small text-light opacity-75">This simulation is powered by a real-time <strong>Gradient Boosting Model</strong> trained on the 6 pollutants shown above. Every adjustment you make is sent directly to the model for an instant AQI estimation.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

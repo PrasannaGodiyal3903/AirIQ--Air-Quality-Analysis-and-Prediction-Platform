@@ -1,0 +1,56 @@
+{% extends "layout.html" %}
+
+{% block title %}Analytics - AirIQ{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+    <!-- 1. ML Model Benchmark (Full Width) -->
+    <div class="col-12">
+        <div class="glass-card p-4">
+            <h5 class="fw-bold text-white mb-4"><i class="fa-solid fa-microchip text-info me-2"></i> ML Model Benchmark (Comprehensive Performance)</h5>
+            <div class="table-responsive">
+                <table class="table table-borderless text-white align-middle mb-0 performance-table">
+                    <thead class="text-secondary text-uppercase fs-8 border-bottom border-secondary">
+                        <tr>
+                            <th class="fw-normal">Model Architecture</th>
+                            <th class="fw-normal text-center">Sample Prediction</th>
+                            <th class="fw-normal text-center">MAE (Error)</th>
+                            <th class="fw-normal text-center">RMSE (Std Dev)</th>
+                            <th class="fw-normal text-end">R² Score (Accuracy)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Populated via JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. Prediction Accuracy (Scatter) -->
+    <div class="col-lg-6">
+        <div class="glass-card p-4">
+            <h5 class="fw-bold text-white mb-4"><i class="fa-solid fa-chart-scatter text-warning me-2"></i> Prediction Accuracy</h5>
+            <div style="height: 380px;">
+                <canvas id="scatterChart"></canvas>
+            </div>
+            <p class="text-secondary small mt-3 mb-0">
+                <i class="fa-solid fa-circle-info me-1"></i> Proximity to the dashed line indicates higher predictive reliability.
+            </p>
+        </div>
+    </div>
+
+    <!-- 3. Feature Importance (Bar) -->
+    <div class="col-lg-6">
+        <div class="glass-card p-4">
+            <h5 class="fw-bold text-white mb-4"><i class="fa-solid fa-chart-column text-success me-2"></i> Pollutant Impact Analysis</h5>
+            <div style="height: 380px;">
+                <canvas id="barChart"></canvas>
+            </div>
+            <p class="text-secondary small mt-3 mb-0">
+                <i class="fa-solid fa-circle-info me-1"></i> Showing the relative contribution of each pollutant to the final AQI calculation.
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

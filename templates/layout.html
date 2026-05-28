@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}AirIQ - Smart AQI Platform{% endblock %}</title>
+    
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Leaflet Maps -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    {% block head %}{% endblock %}
+</head>
+<body>
+
+    <!-- Environmental Background Layer -->
+    <div class="theme-bg" id="themeBg"></div>
+    <div class="theme-overlay"></div>
+
+    <!-- Sidebar Navigation -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-brand d-flex align-items-center justify-content-between w-100 pe-3">
+            <div class="d-flex align-items-center">
+                <i class="fa-solid fa-wind text-info fs-3 me-2"></i>
+                <span class="fw-bold text-white fs-4">AirIQ</span>
+            </div>
+            <button class="theme-toggle-btn" id="themeToggle" title="Toggle Theme">
+                <i class="fa-solid fa-moon"></i>
+            </button>
+        </div>
+        
+        <nav class="nav flex-column">
+            <a class="nav-link {% if request.path == '/' %}active{% endif %}" href="/">
+                <i class="fa-solid fa-house"></i> Overview
+            </a>
+            <a class="nav-link {% if request.path == '/prediction' %}active{% endif %}" href="/prediction">
+                <i class="fa-solid fa-sliders"></i> AQI Prediction
+            </a>
+            <a class="nav-link {% if request.path == '/analytics' %}active{% endif %}" href="/analytics">
+                <i class="fa-solid fa-chart-line"></i> Analytics
+            </a>
+            <a class="nav-link {% if request.path == '/map-view' %}active{% endif %}" href="/map-view">
+                <i class="fa-solid fa-map-location-dot"></i> Heatmap
+            </a>
+            <a class="nav-link {% if request.path == '/commute-view' %}active{% endif %}" href="/commute-view">
+                <i class="fa-solid fa-route"></i> Commute Safety
+            </a>
+            <a class="nav-link {% if request.path == '/leaderboard-view' %}active{% endif %}" href="/leaderboard-view">
+                <i class="fa-solid fa-ranking-star"></i> Leaderboard
+            </a>
+            <a class="nav-link {% if request.path == '/live-tracker' %}active{% endif %}" href="/live-tracker">
+                <i class="fa-solid fa-tower-broadcast"></i> Live Tracker
+            </a>
+            <a class="nav-link {% if request.path == '/comparison-view' %}active{% endif %}" href="/comparison-view">
+                <i class="fa-solid fa-shield-halved"></i> City Battle
+            </a>
+        </nav>
+    </div>
+
+    <!-- Main Wrapper -->
+    <div class="main-wrapper">
+        <!-- Top Navbar -->
+        <header class="top-navbar d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+                <button class="btn btn-link text-white d-lg-none me-3" id="sidebarToggle">
+                    <i class="fa-solid fa-bars fs-4"></i>
+                </button>
+                <h5 class="mb-0 fw-semibold text-white-50">{% block page_title %}Dashboard{% endblock %}</h5>
+            </div>
+            
+            <div class="d-flex align-items-center gap-4">
+                <div class="datetime-display d-none d-md-flex flex-column text-end">
+                    <span id="currentDate" class="text-secondary small">--</span>
+                    <span id="currentTime" class="text-info fw-bold">--:--</span>
+                </div>
+                <div class="user-profile">
+                    <i class="fa-solid fa-circle-user fs-3 text-secondary"></i>
+                </div>
+            </div>
+        </header>
+
+        <!-- Page Content -->
+        <main class="p-4 p-md-5">
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+
+    <!-- Core Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Sidebar Toggle for Mobile
+        document.getElementById('sidebarToggle')?.addEventListener('click', function() {
+            document.getElementById('sidebar').classList.toggle('show');
+        });
+        
+        // Auto-close sidebar on mobile after clicking link
+        document.querySelectorAll('.sidebar .nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth < 992) {
+                    document.getElementById('sidebar').classList.remove('show');
+                }
+            });
+        });
+    </script>
+    
+    <script type="module" src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script type="module" src="{{ url_for('static', filename='js/commute.js') }}"></script>
+    <script type="module" src="{{ url_for('static', filename='js/leaderboard.js') }}"></script>
+    
+    {% block scripts %}{% endblock %}
+</body>
+</html>
