@@ -1,3 +1,11 @@
+<<<<<<< HEAD
+=======
+rajeev@Rajeevs-MacBook-Air airIQ % git pull --no-rebase origin main
+error: You have not concluded your merge (MERGE_HEAD exists).
+hint: Please, commit your changes before merging.
+fatal: Exiting because of unfinished merge.
+rajeev@Rajeevs-MacBook-Air airIQ % 
+>>>>>>> 610e21bc984407b639a9378906d06c408a4f86fc
 station,last_update,CO,NH3,NO2,OZONE,PM10,PM2.5,SO2,AQI
 "15th Mile-Nongthymmai, Byrnihat - Meghalaya PCB",2026-04-21 17:00:00,13.0,5.0,22.0,44.0,92.0,61.0,13.0,92.0
 "32Bungalows, Bhilai - CECB",2026-04-21 17:00:00,16.0,4.0,17.0,29.0,35.0,30.0,17.0,35.0
