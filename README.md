@@ -221,7 +221,7 @@ python app.py
 Visit:
 
 ```text
-http://localhost:5000
+https://airiq-air-quality-analysis-and.onrender.com
 ```
 
 ---
